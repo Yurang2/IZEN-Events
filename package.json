@@ -1,0 +1,8 @@
+{
+  "name": "izen-events",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "node test/statusMapping.test.js"
+  }
+}

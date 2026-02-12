@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Status Bar Demo</title>
+    <style>
+      body { font-family: sans-serif; margin: 24px; }
+      .row { margin-bottom: 14px; }
+      .bar { padding: 8px 10px; border-radius: 8px; display: inline-block; min-width: 200px; }
+      .delay { height: 6px; width: 200px; border-radius: 4px; margin-top: 4px; }
+      .legend { margin-top: 20px; display: grid; grid-template-columns: repeat(2, minmax(180px, 1fr)); gap: 10px; }
+      .chip { padding: 6px 8px; border-radius: 8px; }
+      .muted { color: #374151; font-size: 12px; }
+    </style>
+  </head>
+  <body>
+    <h2>상태 중심 바/배지 매핑</h2>
+    <div id="app"></div>
+    <script type="module">
+      import { renderBar } from './src/barRenderer.js';
+      import { buildStatusLegend } from './src/statusMapping.js';
+
+      const rows = [
+        renderBar({ id: '1', label: '회원가입 이벤트', status: '완료', showDelay: true, delayDays: 1 }),
+        renderBar({ id: '2', label: '결제 리뉴얼', status: '진행중', showDelay: true, delayDays: 2 }),
+        renderBar({ id: '3', label: '정산 자동화', status: '대기', showDelay: true, delayDays: 5 }),
+        renderBar({ id: '4', label: '모니터링', status: '지연', showDelay: true, delayDays: 2 }),
+      ];
+
+      const app = document.getElementById('app');
+      rows.forEach((row) => {
+        const container = document.createElement('div');
+        container.className = 'row';
+        container.innerHTML = `
+          <div class="bar" style="background:${row.bar.style.background};color:${row.bar.style.color};opacity:${row.bar.style.opacity}">
+            ${row.label} · ${row.status}
+          </div>
+          ${row.delayBar ? `<div class="delay" style="background:${row.delayBar.style.background};opacity:${row.delayBar.style.opacity}"></div>` : ''}
+        `;
+        app.appendChild(container);
+      });
+
+      const legendTitle = document.createElement('h3');
+      legendTitle.textContent = 'Legend (막대 의미 = 업무 상태)';
+      app.appendChild(legendTitle);
+
+      const legend = document.createElement('div');
+      legend.className = 'legend';
+      buildStatusLegend().forEach((item) => {
+        const node = document.createElement('div');
+        node.innerHTML = `
+          <div class="chip" style="background:${item.tokens.badge.background};color:${item.tokens.badge.text}">${item.label}</div>
+          <div class="muted">${item.meaning}</div>
+        `;
+        legend.appendChild(node);
+      });
+      app.appendChild(legend);
+    </script>
+  </body>
+</html>
